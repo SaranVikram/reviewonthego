@@ -77,9 +77,16 @@
             margin: 0 auto;
         }
     </style>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=<%= client.gtag %>"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '<%= client.gtag %>');
+  </script>
 </head>
 
-<body>
+<body> 
     <div class=main-contaner>
         <div class=header>
             <div class=company-logo><img alt="<%= client.company %> logo" id=logo_img class=logo
@@ -100,7 +107,7 @@
                 <span class=top-border style="border-right-width: 1523px"></span>
                 <div class=footer>
                     <div class=left-content>
-                        <p>Powered By</p><a href=#>Review | Onthego</a>
+                        <p>Powered By</p><a href=#>ReviewOnthego</a>
                     </div>
                 </div>
             </div>
@@ -250,7 +257,7 @@
             .show()
       
         : $.ajax({
-            url: "/review/<%= client.company %>",
+            url: "/review/<%= client.id %>",
             method: "POST",
             dataType: "json",
             data: {

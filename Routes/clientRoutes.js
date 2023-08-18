@@ -1,6 +1,6 @@
 const express = require("express")
 const clientController = require("../Controllers/clientController")
-const adminMiddleware = require("../middleware/adminMiddleware") // If using separate middleware file
+const adminMiddleware = require("../Middlewears/adminMiddleware") // If using separate middleware file
 const router = express.Router()
 
 router.get("/clients", adminMiddleware.requireAdminLogin, clientController.getClients)

@@ -1,19 +1,34 @@
 const Client = require("../models/Client")
+const jwt = require("jsonwebtoken")
 const twilio = require("twilio") // If using Twilio for OTP
 
-// Get client login page (OTP)
-exports.getClientLogin = (req, res) => {
-  res.render("client-login")
+// Secret key for JWT (should be stored in environment variables)
+const JWT_SECRET = process.env.JWT_SECRET
+
+exports.authenticate = (req, res, next) => {
+  // Get the token from the request headers
+  const token = req.headers.authorization?.split(" ")[1]
+
+  // Verify the token
+  jwt.verify(token, JWT_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ error: "Authentication failed" })
+    }
+
+    // Store the client's ID in the request object
+    req.clientId = decoded.id
+
+    next()
+  })
 }
 
-// Post client login (OTP)
 exports.postClientLogin = async (req, res) => {
   const phoneNumber = req.body.phoneNumber
   const client = await Client.findOne({ phoneNumber })
 
   if (!client) {
     // Handle error if phone number not found
-    return res.render("client-login", { error: "Phone number not found" })
+    return res.status(404).json({ error: "Phone number not found" })
   }
 
   const otp = Math.floor(100000 + Math.random() * 900000) // Generate 6-digit OTP
@@ -26,9 +41,11 @@ exports.postClientLogin = async (req, res) => {
     to: phoneNumber,
   })
 
-  req.session.otp = otp // Store OTP in session
-  req.session.clientId = client._id // Store client ID for verification
-  res.redirect("/verify-otp")
+  // Store OTP and client ID in session
+  req.session.otp = otp
+  req.session.clientId = client._id
+
+  res.json({ success: "OTP sent successfully" })
 }
 
 // Verify client OTP
@@ -37,11 +54,15 @@ exports.verifyClientOTP = async (req, res) => {
 
   if (inputOTP === req.session.otp) {
     // OTP is valid, authenticate client
-    req.session.isAuthenticated = true
-    res.redirect("/dashboard")
+
+    // Generate a JWT with the client's ID
+    const token = jwt.sign({ id: req.session.clientId }, JWT_SECRET, { expiresIn: "1d" })
+
+    // Send the token to the client
+    res.json({ token })
   } else {
     // OTP is invalid, show error message
-    res.render("verify-otp", { error: "Invalid OTP" })
+    res.status(401).json({ error: "Invalid OTP" })
   }
 }
 
