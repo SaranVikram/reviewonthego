@@ -1,36 +1,31 @@
-const Client = require("../Models/Client") // Path to Client schema
+const Client = require("../models/Client")
 
-// Get all clients (for admin)
 exports.getClients = async (req, res) => {
   const clients = await Client.find()
-  res.render("clients", { clients }) // Render clients list
+  res.render("clients", { clients })
 }
 
-// Create client page
 exports.getCreateClient = (req, res) => {
   res.render("create-client")
 }
 
-// Create client (POST)
 exports.postCreateClient = async (req, res) => {
-  // Validate and save client data
-  // Redirect to clients list or show success message
+  const client = new Client(req.body)
+  await client.save()
+  res.redirect("/admin/clients")
 }
 
-// Edit client page
 exports.getEditClient = async (req, res) => {
   const client = await Client.findById(req.params.id)
-  res.render("edit-client", { client }) // Render edit client page
+  res.render("edit-client", { client })
 }
 
-// Update client (POST)
 exports.postEditClient = async (req, res) => {
-  // Validate and update client data
-  // Redirect to clients list or show success message
+  await Client.findByIdAndUpdate(req.params.id, req.body)
+  res.redirect("/admin/clients")
 }
 
-// Delete client
 exports.deleteClient = async (req, res) => {
   await Client.findByIdAndDelete(req.params.id)
-  res.redirect("/admin/clients") // Redirect to clients list
+  res.redirect("/admin/clients")
 }

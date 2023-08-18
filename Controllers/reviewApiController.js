@@ -1,17 +1,18 @@
 const Client = require("../models/Client")
 const Review = require("../models/Review")
 
-// Get reviews for a specific client
-exports.getReviews = async (req, res) => {
-  const reviews = await Review.find({ client: req.params.clientId }).populate("client")
-  res.json(reviews)
+exports.getReviewPage = async (req, res) => {
+  const client = await Client.findById(req.params.clientId)
+  res.render("review-client", { client })
 }
 
-// Post a review for a specific client
 exports.postReview = async (req, res) => {
-  // Validate review data
-  // Save review to the database
-  res.json({ success: true })
+  const review = new Review({
+    client: req.params.clientId,
+    customerName: req.body.customerName,
+    reviewText: req.body.reviewText,
+    rating: req.body.rating,
+  })
+  await review.save()
+  res.redirect("/thank-you")
 }
-
-// Additional API functions as needed

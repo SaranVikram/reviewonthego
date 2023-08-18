@@ -20,5 +20,8 @@
     "mongoose": "^7.4.3",
     "sanitize-html": "^2.11.0",
     "twilio": "^4.15.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
   }
 }
