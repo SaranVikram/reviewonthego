@@ -1,0 +1,94 @@
+<%- include('includes/header') %>
+<!-- header ends here -->
+
+<div class="container py-md-5 container--narrow">
+  <form action="/create-client" method="POST" enctype="multipart/form-data">
+    <div class="form-group">
+      <label for="post-name" class="text-muted mb-1"><small>Name</small></label>
+      <input
+        required
+        name="name"
+        id="post-name"
+        class="form-control form-control-lg form-control-title"
+        type="text"
+        placeholder=""
+        autocomplete="off"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="post-company" class="text-muted mb-1"
+        ><small>company</small></label
+      >
+      <input
+        required
+        name="company"
+        id="post-company"
+        class="form-control form-control-lg form-control-title"
+        type="text"
+        placeholder=""
+        autocomplete="off"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="post-Mobile" class="text-muted mb-1"
+        ><small>Mobile</small></label
+      >
+      <input
+        required
+        name="Mobile"
+        id="post-Mobile"
+        class="form-control form-control-lg form-control-title"
+        type="tel"
+        placeholder=""
+        autocomplete="off"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="post-Email" class="text-muted mb-1"
+        ><small>Email</small></label
+      >
+      <input
+        required
+        name="Email"
+        id="post-Email"
+        class="form-control form-control-lg form-control-title"
+        type="email"
+        placeholder=""
+        autocomplete="off"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="post-URL" class="text-muted mb-1"><small>URL</small></label>
+      <input
+        required
+        name="URL"
+        id="post-URL"
+        class="form-control form-control-lg form-control-title"
+        type="text"
+        placeholder=""
+        autocomplete="off"
+      />
+    </div>
+
+    <div class="form-group">
+      <label for="post-image" class="text-muted mb-1"
+        ><small>Upload Logo</small></label
+      >
+      <input required id="post-image" type="file" name="image" />
+    </div>
+
+    <!-- <div class="form-group">
+        <label for="post-body" class="text-muted mb-1"><small>Body Content</small></label>
+        <textarea required name="body" id="post-body" class="body-content tall-textarea form-control" type="text"></textarea>
+      </div> -->
+
+    <button class="btn btn-primary">Create Client</button>
+  </form>
+</div>
+
+<!-- footer begins -->
+<%- include('includes/footer') %>

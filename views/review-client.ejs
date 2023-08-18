@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang=en>
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+
+<head>
+    <meta charset=utf-8>
+    <meta http-equiv=X-UA-Compatible content="IE=edge">
+    <meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,shrink-to-fit=no">
+    <meta name=description content="How was your experience with Furniture Park?">
+    <meta property=og:title content="Furniture Park">
+    <meta property=og:description content="How was your experience with Furniture Park?">
+    <meta property=og:image content=https://backend.rectangled.in/uploads/bg-img/127-1595653844-Register10.jpg>
+    <meta name=robots content=noindex>
+    <title>Review - <%= client.company %> | Reviewonthego</title>
+    <link rel=stylesheet href="/css/bootstrap.min.css">
+    <link rel=stylesheet href="/css/fontawesome-all.css">
+    <link rel=stylesheet href="/css/review-v2.css">
+    <link rel=stylesheet href="/css/fonts.css">
+    <style>
+      body , html {
+        overflow-x: hidden;
+        
+        width:100%;
+      }
+        .button-container .primary-btn,
+        .button-container .secondary-btn {
+          display: block;
+          text-align: left;
+          color: #fff;
+          padding: 18px 26px;
+          border-radius: 50px 0 0 50px;
+          margin-bottom: 25px;
+          width: 80%;
+          float: right;
+          font-size: 18px;
+          font-weight: 600;
+          text-decoration: none;
+        }
+  
+      
+        .button-container .secondary-btn {
+          background: #969595;
+          margin-top: 10px;
+        }
+        .button-container .primary-btn {
+          background: #000;
+          
+        }
+        .btn-group-lg > .btn,
+        .btn-lg {
+          font-size: 20px;
+        }
+        @media (min-width: 768px) {
+          .modal-dialog {
+            width: 100%;
+            margin: 30px auto;
+          }
+        }
+      
+  
+        .close:focus,
+        .close:hover {
+          color: red;
+        }
+        .close {
+          color: red;
+          font-size: 20px;
+          opacity: 1;
+        }
+      
+        .starrr a {
+          color: rgb(4, 4, 4);
+        }
+      </style>
+    <style type=text/css>
+        .cloudflare-badge {
+            margin: 0 auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class=main-contaner>
+        <div class=header>
+            <div class=company-logo><img alt="<%= client.company %> logo" id=logo_img class=logo
+                    src=/client-logos/<%= client.imagePath %>>
+            </div>
+        </div>
+        <div class=body-container>
+            <h1 class=greeting-text>Hi There!</h1>
+            <p class=review-text>How was your experience with <%= client.company %>?</p>
+        </div>
+        <div class=button-container><a href=# class="primary-btn review-click" data-toggle=modal
+                data-target=#add_reviews_modal>Great</a> <a href=#
+                class="secondary-btn review-click needs-improvement-click" data-toggle=modal
+                data-target=#review-form-modal>Needs Improvement</a></div>
+        <div class=footer-container>
+            <div class=image-container
+                style="background-image: url('/bg-image.jpg');">
+                <span class=top-border style="border-right-width: 1523px"></span>
+                <div class=footer>
+                    <div class=left-content>
+                        <p>Powered By</p><a href=#>Review | Onthego</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id=add_reviews_modal tabindex=-1 aria-labelledby=Excellent_Reviews aria-hidden=true>
+        <div class="modal-dialog modal-dialog-centered">
+            <div class=modal-content>
+                <div class=modal-body>
+                    <h4 class="text18 text-center">Please take a moment to share your experience!</h4>
+                    <p class="text14 text-center">Add your review on</p>
+                    <div class="row logo-container no-gutters">
+                        <div class=col><a
+                                href="<%= client.URL %>"
+                                target=_blank><img alt="Google Reviews Logo" data-platform-id=1
+                                    class="google-review review-img click-track"
+                                    src=/google.png></a>
+                        </div>
+                        <!-- <div class=col><a href="https://www.facebook.com/pg/apfurniturepark/reviews/?ref=page_internal"
+                                target=_blank><img alt="Facebook Logo" data-platform-id=2
+                                    class="google-review review-img click-track"
+                                    src=../../rectangled-secured-assets.s3.ap-south-1.amazonaws.com/images/platform-images/facebook.png></a>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id=review-form-modal tabindex=-1 aria-labelledby=Client_Feedbacks aria-hidden=true>
+        <div class="modal-dialog modal-dialog-centered">
+            <div class=modal-content>
+                <div class=modal-header>
+                    <div class=company-logo><img alt=" <%= client.company %> logo" class=logo
+                            src=/client-logos/<%= client.imagePath %>>
+                    </div><button type=button class="close text-primary" data-dismiss=modal aria-label=Close><span
+                            aria-hidden=true>&times;</span></button>
+                </div>
+                <div class="modal-body pb-0"><span class="text-danger error"
+                        style="margin-top: 10px;display: none;"></span>
+                    <div class=starrr></div>
+                    <p class="text18 text-center mb-1">We value your feedback</p>
+                    <div class="form-group mb-2"><input type=email class="form-control feedback-name" placeholder=Name*>
+                    </div>
+                    <div class="form-group mb-2"><input id=phone type=number class="form-control feedback-phone"
+                            placeholder=Phone*></div>
+                    <div class=form-group><textarea class="form-control feedback-text"
+                            placeholder="How can we improve?"></textarea></div>
+                    <div class="form-group text-center mt-2">
+                        <p style="margin-bottom: 0px!important;"><span style="white-space: pre-line">By submitting
+                                feedback, </span>You agree to our <a href=#>data
+                                policy</a></p>
+                    </div>
+                </div>
+                <div class="modal-footer pb-0"><button type=button class="btn btn-primary btn-rounded"
+                        id=submit-fb style="background-color: rgb(4, 4, 4);
+                        border-color: rgb(4, 4, 4);">Submit</button></div>
+                <div class="review-block p-2 text-center mb-2">
+                    <h6 class=text-muted style="font-size:0.8rem; margin-bottom: 5px;">Review Us On</h6><a
+                        href="<%= client.URL %>"
+                        target=_blank><img alt="Google Reviews Logo" data-platform-id=1
+                            class="google-review review-img feedback-img click-track img-greyscale"
+                            src=/google.png
+                            width=24></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <link rel=stylesheet href=/cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css>
+    <script src=/cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js></script>
+    <script src="/js/vendor/jquery/jquery-1.12.3.js"></script>
+    <script src="/js/vendor/bootstrap.min.js"></script>
+    <script src="/js/vendor/starrr.js" ></script>
+    <script src="/js/vendor/color-thief.js"></script>
+    <script src="/js/vendor/jquery.primarycolor.js"></script>
+    <script src="/js/vendor/tinycolor.js"></script>
+    <script>
+      function l(r) {
+      const e = tinycolor(r);
+      (r && !e.isLight()) || (r = "66, 133, 244"),
+        $(".button-container .primary-btn, .btn-primary").css(
+          "background-color",
+          "rgb(" + r + ")"
+        ),
+        $(".btn-primary").css("border-color", "rgb(" + r + ")"),
+        $(".starrr a").css("color", "rgb(" + r + ")"),
+        $(".link.text-primary").css("color", "rgb(" + r + ")"),
+        $(".close").css("color", "rgb(" + r + ")"),
+        $("#review-form-modal").on("show.bs.modal", function (e) {
+          $(".button-container .primary-btn, .btn-primary").css(
+            "background-color",
+            "rgb(" + r + ")"
+          ),
+            $(".btn-primary").css("border-color", "rgb(" + r + ")"),
+            $(".starrr a").css("color", "rgb(" + r + ")"),
+            $(".link.text-primary").css("color", "rgb(" + r + ")"),
+            $(".close.text-primary").css("color", "rgb(" + r + ")");
+        });
+    }
+        $(document).ready(function () {
+          $("#logo_img").error(function () {
+        l("66, 133, 244");
+      });
+      var e = document.querySelector("#phone");
+      const t = window.intlTelInput(e, {
+        initialCountry: "in",
+        utilsScript:
+          "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+      });
+      try {
+       
+        if (`<%= client.imagePath %>`) {
+          var r = new Image();
+
+          r.src = window.location.origin + "/client-logos/" + `<%= client.imagePath %>` ;
+          const a = new ColorThief();
+          (r.onload = function () {
+            l(a.getColor(r));
+          }),
+            (r.onerror = function () {
+              console.log("invalid logo"), l("66, 133, 244");
+            });
+        } else l("66, 133, 244");
+      } catch (e) {
+        l("66, 133, 244");
+      } } ) ;
+      $(document).ready(function () {
+  $(".starrr").starrr();
+  var o = 0;
+  $(".starrr").on("starrr:change", function (e, r) {
+    o = r;
+  }),
+    $("#submit-fb").on("click", function () {
+      "" === $(".feedback-name").val()
+        ? $("#review-form-modal .error").text("Please enter your name").show()
+        : "" === $(".feedback-phone").val() ||
+          $(".feedback-phone").val().length < 10
+        ? $("#review-form-modal .error")
+            .text("Please enter a valid phone number")
+            .show()
+        : "" === $(".feedback-text").val()
+        ? $("#review-form-modal .error")
+            .text("Please let us know how we can improve")
+            .show()
+        : 0 == o
+        ? $("#review-form-modal .error")
+            .text("Please select your preferred rating")
+            .show()
+      
+        : $.ajax({
+            url: "/review/<%= client.company %>",
+            method: "POST",
+            dataType: "json",
+            data: {
+             
+              name: $(".feedback-name").val(),
+              phone: $(".feedback-phone").val() ,
+              
+              rating: o,
+              feedback: $(".feedback-text").val(),
+              
+            },
+            success: function (e) {
+              
+              e.success
+               
+                  ? ($("#review-form-modal .modal-content")
+                      .empty()
+                      .html(
+                        '<div style="padding:20px">Thank you for your valuable feedback.</div>'
+                      ),
+                    $("#review-form-modal .error").hide())
+                 
+                : $("#review-form-modal .error")
+                    .text("Sorry! Some error occurred. Please try again later")
+                    .show();
+             },
+          });
+    })
+    
+}  ) ;
+
+
+    </script>
+</body>
+
+</html>
