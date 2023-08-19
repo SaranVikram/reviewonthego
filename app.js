@@ -17,19 +17,17 @@ mongoose
   .connect(process.env.CONNECTIONSTRING, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     console.log("Connected to MongoDB")
-
-    app.use(
-      session({
-        secret: process.env.SESSION_SECRET,
-        store: MongoStore.create({ mongoUrl: process.env.CONNECTIONSTRING }),
-        resave: false,
-        saveUninitialized: false,
-      })
-    )
-
-    // Other app configuration here
   })
   .catch((err) => console.error("Could not connect to MongoDB:", err))
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    store: MongoStore.create({ mongoUrl: process.env.CONNECTIONSTRING }),
+    resave: false,
+    saveUninitialized: false,
+  })
+)
 
 app.use(flash()) // Flash messages
 

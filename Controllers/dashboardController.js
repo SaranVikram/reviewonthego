@@ -67,7 +67,7 @@ exports.verifyClientOTP = async (req, res) => {
 }
 
 // Get client dashboard
-exports.getDashboard = async (req, res) => {
+exports.getDashboardData = async (req, res) => {
   if (!req.session.isAuthenticated) {
     // Redirect to login if not authenticated
     return res.redirect("/client-login")

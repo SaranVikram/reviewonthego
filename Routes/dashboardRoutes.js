@@ -13,7 +13,7 @@ router.post("/verify-otp", dashboardController.verifyClientOTP)
 router.get("/data", dashboardController.authenticate, dashboardController.getDashboardData)
 
 // Update client's profile
-router.put("/profile", dashboardController.authenticate, dashboardController.updateProfile)
+//router.put("/profile", dashboardController.authenticate, dashboardController.updateProfile)
 
 // Other dashboard-related routes as needed
 
