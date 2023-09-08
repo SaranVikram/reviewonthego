@@ -21,6 +21,11 @@ router.get(
   dashboardController.authenticate,
   dashboardController.getDashboardData
 );
+router.get(
+  "/client-reviews",
+  dashboardController.authenticate,
+  dashboardController.getReviews
+);
 
 // Update client's profile
 //router.put("/profile", dashboardController.authenticate, dashboardController.updateProfile)

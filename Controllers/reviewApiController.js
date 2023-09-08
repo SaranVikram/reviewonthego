@@ -1,12 +1,38 @@
 const Client = require("../models/Client");
 const Review = require("../models/Review");
 const PageView = require("../Models/PageView"); // Import your PageView model
+const mongoose = require("mongoose");
 
 exports.getReviewPage = async (req, res) => {
-  try {
-    const clientId = req.params.clientId; // Assuming you have the client's ID
+  const clientId = req.params.clientId;
 
-    // Get or create a PageView document for today and the specific client
+  // Check if the provided clientId is a valid MongoDB ObjectId
+  if (!mongoose.Types.ObjectId.isValid(clientId)) {
+    return res.status(400).send("Invalid client ID format.");
+  }
+
+  try {
+    // Fetch the client data
+    const client = await Client.findById(clientId);
+
+    // If the client isn't found, render the 404 page
+    if (!client) {
+      return res.status(404).render("404"); // Assuming you have a 404.ejs template
+    }
+
+    // Render the client review page
+    res.render("review-client", { client });
+  } catch (error) {
+    console.error("Error fetching client data:", error);
+    return res.status(500).send("Error fetching client data.");
+  }
+
+  // Check if the function has already been executed for this session
+  if (req.session.hasIncremented) {
+    return; // Exit the function if the count has already been incremented for this session
+  }
+
+  try {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -16,90 +42,12 @@ exports.getReviewPage = async (req, res) => {
       pageView = new PageView({ date: today, client: clientId });
     }
 
-    // Increment the count for the page view
     pageView.count++;
-
-    // Save the PageView document
     await pageView.save();
 
-    // Update the Client document to reference the PageView document
-    const client = await Client.findByIdAndUpdate(
-      clientId,
-      { $addToSet: { pageViews: pageView._id } },
-      { new: true }
-    );
-
-    // Render the "review-client" page with the updated client data
-    res.render("review-client", { client });
+    req.session.hasIncremented = true; // Set the session flag after incrementing the count
   } catch (error) {
-    console.error(
-      "Error updating page views and rendering the review page:",
-      error
-    );
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-};
-
-exports.getReviews = async (req, res) => {
-  try {
-    // Define pagination parameters
-    const page = parseInt(req.query.page) || 1; // Page number
-    const limit = parseInt(req.query.limit) || 10; // Number of results per page
-
-    // Define query conditions (optional)
-    const query = {
-      client: req.params.clientId,
-    };
-
-    // Define fields to select (optional)
-    const fields = req.query.fields
-      ? req.query.fields.split(",").join(" ") // Convert comma-separated fields to space-separated
-      : "";
-
-    // Define sorting criteria (optional)
-    const sort = req.query.sort || "-date"; // Default to sorting by date in descending order
-
-    // Apply date filtering based on query parameter
-    const dateFilter = req.query.dateFilter || "all"; // Default to 'all'
-
-    if (dateFilter === "today") {
-      // Filter for today's reviews
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      query.date = { $gte: today };
-    } else if (dateFilter === "thisWeek") {
-      // Filter for reviews in the last 7 days (including today)
-      const lastWeek = new Date();
-      lastWeek.setDate(lastWeek.getDate() - 6);
-      lastWeek.setHours(0, 0, 0, 0);
-      query.date = { $gte: lastWeek };
-    } else if (dateFilter === "thisMonth") {
-      // Filter for reviews in the last 30 days (including today)
-      const lastMonth = new Date();
-      lastMonth.setDate(lastMonth.getDate() - 29);
-      lastMonth.setHours(0, 0, 0, 0);
-      query.date = { $gte: lastMonth };
-    }
-
-    // Execute the query without populating the client field
-    const reviews = await Review.find(query)
-      .select(fields)
-      .sort(sort)
-      .skip((page - 1) * limit)
-      .limit(limit);
-
-    // Now, let's populate the client field for a single review
-    if (reviews.length > 0) {
-      const reviewWithClient = await Review.populate(reviews[0], {
-        path: "client",
-      });
-      res.json([reviewWithClient, ...reviews.slice(1)]); // Send the populated review first and the rest unpopulated
-    } else {
-      res.json(reviews);
-    }
-  } catch (error) {
-    console.error("Error fetching reviews:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error updating page views:", error);
   }
 };
 
