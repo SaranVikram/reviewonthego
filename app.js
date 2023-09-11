@@ -6,7 +6,6 @@ const flash = require("connect-flash");
 const cookieParser = require("cookie-parser");
 const dotenv = require("dotenv");
 const adminRoutes = require("./Routes/adminRoutes");
-const clientRoutes = require("./Routes/clientRoutes");
 const reviewApiRoutes = require("./Routes/reviewApiRoutes");
 const dashboardRoutes = require("./Routes/dashboardRoutes");
 
@@ -48,7 +47,6 @@ app.use(express.static("public"));
 
 // TODO: Add routes
 app.use("/admin", adminRoutes);
-app.use("/admin", clientRoutes);
 app.use("/", reviewApiRoutes);
 app.use("/api", dashboardRoutes);
 

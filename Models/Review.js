@@ -1,8 +1,12 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
 const reviewSchema = new mongoose.Schema(
   {
-    client: { type: mongoose.Schema.Types.ObjectId, ref: "Client", required: true },
+    client: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Client",
+      required: true,
+    },
     customerName: { type: String, required: true },
     phoneNumber: { type: Number, required: true },
     reviewText: { type: String, required: true },
@@ -10,6 +14,6 @@ const reviewSchema = new mongoose.Schema(
     // Additional fields as needed
   },
   { timestamps: true }
-) // Enable timestamps
+); // Enable timestamps
 
-module.exports = mongoose.model("Review", reviewSchema)
+module.exports = mongoose.model("Review", reviewSchema);

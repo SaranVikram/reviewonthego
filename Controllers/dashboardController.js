@@ -1,5 +1,6 @@
 const Client = require("../models/Client");
 const Review = require("../models/Review");
+const CustomerCheckin = require("../Models/CustomerCheckin");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const twilio = require("twilio"); // If using Twilio for OTP
@@ -108,7 +109,7 @@ exports.getReviews = async (req, res) => {
     const {
       page = 1,
       limit = 10,
-      fields,
+      fields = "-_id,-createdAt,-updatedAt,-__v",
       sort = "-date",
       dateFilter = "all",
     } = req.query;
@@ -140,6 +141,54 @@ exports.getReviews = async (req, res) => {
   }
 };
 
+exports.customerCheckin = async (req, res) => {
+  try {
+    // Extract data from request
+    const { customerName, phoneNumber } = req.body;
+
+    // Validate customerName
+    if (
+      !customerName ||
+      typeof customerName !== "string" ||
+      customerName.length > 50
+    ) {
+      return res.status(400).json({ error: "Invalid customer name" });
+    }
+
+    // Validate phoneNumber
+    if (
+      !phoneNumber ||
+      typeof phoneNumber !== "number" ||
+      phoneNumber.toString().length !== 10
+    ) {
+      return res.status(400).json({ error: "Invalid phone number" });
+    }
+    const clientId = req.clientId;
+
+    // Create a new checkin using the create operation
+    const newCheckin = await CustomerCheckin.create({
+      customerName,
+      phoneNumber,
+      client: clientId,
+    });
+
+    // Send a WhatsApp message to the client
+    // You'll need to define the sendWhatsAppMessage function or method
+    // sendWhatsAppMessage(clientId, `New customer check-in: ${customerName}, Phone: ${phoneNumber}`);
+
+    // Reduce the WhatsApp API limit for the client
+    // You'll need to define a function or method to handle this
+    // reduceWhatsAppLimit(clientId);
+
+    res
+      .status(201)
+      .json({ success: "Check-in recorded and WhatsApp message sent." });
+  } catch (error) {
+    console.error("Error during customer check-in:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 /**
  * Apply date filtering to the query based on the provided dateFilter value.
  * @param {Object} query - The Mongoose query object.
@@ -151,17 +200,17 @@ function applyDateFilter(query, dateFilter) {
 
   switch (dateFilter) {
     case "today":
-      query.date = { $gte: today };
+      query.createdAt = { $gte: today };
       break;
     case "thisWeek":
       const lastWeek = new Date(today);
       lastWeek.setDate(lastWeek.getDate() - 6);
-      query.date = { $gte: lastWeek };
+      query.createdAt = { $gte: lastWeek };
       break;
     case "thisMonth":
       const lastMonth = new Date(today);
       lastMonth.setDate(lastMonth.getDate() - 29);
-      query.date = { $gte: lastMonth };
+      query.createdAt = { $gte: lastMonth };
       break;
     // 'all' or any other value will not modify the query
   }

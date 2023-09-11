@@ -27,6 +27,12 @@ router.get(
   dashboardController.getReviews
 );
 
+router.post(
+  "/customer-checkin",
+  dashboardController.authenticate,
+  dashboardController.customerCheckin
+);
+
 // Update client's profile
 //router.put("/profile", dashboardController.authenticate, dashboardController.updateProfile)
 
