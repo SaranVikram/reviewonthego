@@ -10,7 +10,7 @@
     <meta property=og:title content="">
     <meta property=og:description content="">
     <meta property=og:image content=>
-    <meta name=robots content=noindex>
+    <meta name="robots" content="noindex, nofollow">
     <title>Review - <%= client.company %> | Reviewonthego</title>
     <link rel=stylesheet href="/css/bootstrap.min.css">
     <link rel=stylesheet href="/css/fontawesome-all.css">
@@ -77,13 +77,6 @@
             margin: 0 auto;
         }
     </style>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=<%= client.gtag %>"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', '<%= client.gtag %>');
-  </script>
 </head>
 
 <body> 
@@ -121,7 +114,7 @@
                     <p class="text14 text-center">Add your review on</p>
                     <div class="row logo-container no-gutters">
                         <div class=col><a
-                                href="<%= client.URL %>"
+                                href="https://search.google.com/local/writereview?placeid=<%= client.URL %>"
                                 target=_blank><img alt="Google Reviews Logo" data-platform-id=1
                                     class="google-review review-img click-track"
                                     src=/google.png></a>
@@ -166,7 +159,7 @@
                         border-color: rgb(4, 4, 4);">Submit</button></div>
                 <div class="review-block p-2 text-center mb-2">
                     <h6 class=text-muted style="font-size:0.8rem; margin-bottom: 5px;">Review Us On</h6><a
-                        href="<%= client.URL %>"
+                        href=" https://search.google.com/local/writereview?placeid=<%= client.URL %>"
                         target=_blank><img alt="Google Reviews Logo" data-platform-id=1
                             class="google-review review-img feedback-img click-track img-greyscale"
                             src=/google.png
