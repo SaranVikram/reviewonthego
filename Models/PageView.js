@@ -1,7 +1,7 @@
-const mongoose = require("mongoose");
+const mongoose = require("mongoose")
 
 const pageViewSchema = new mongoose.Schema({
-  date: {
+  createdAt: {
     type: Date,
     required: true,
   },
@@ -15,6 +15,6 @@ const pageViewSchema = new mongoose.Schema({
     required: true,
   },
   // Other fields related to page views, if needed
-});
+})
 
-module.exports = mongoose.model("PageView", pageViewSchema);
+module.exports = mongoose.model("PageView", pageViewSchema)

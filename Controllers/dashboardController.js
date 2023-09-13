@@ -88,15 +88,30 @@ exports.verifyClientOTP = async (req, res) => {
   }
 }
 
-// Get client dashboard
-exports.getDashboardData = async (req, res) => {
-  if (!req.session.isAuthenticated) {
-    // Redirect to login if not authenticated
-    return res.redirect("/client-login")
-  }
+exports.getStats = async (req, res) => {
+  try {
+    const clientId = req.clientId
+    const { dateFilter } = req.query
 
-  const client = await Client.findById(req.session.clientId)
-  res.render("client-dashboard", { client })
+    // Construct the base query with client ID
+    const baseQuery = { client: clientId }
+    applyDateFilter(baseQuery, dateFilter) // Assuming you have the applyDateFilter function
+
+    // Fetch counts
+    const pageviewsCount = (await PageView.aggregate([{ $match: baseQuery }, { $group: { _id: null, total: { $sum: "$count" } } }]))[0]?.total || 0
+    const reviewsCount = await Review.countDocuments(baseQuery)
+    const checkinsCount = await CustomerCheckin.countDocuments(baseQuery)
+
+    // Send the counts as the response
+    res.json({
+      pageviewsCount,
+      reviewsCount,
+      checkinsCount,
+    })
+  } catch (error) {
+    console.error("Error fetching stats:", error)
+    res.status(500).json({ error: "Internal Server Error" })
+  }
 }
 
 exports.getReviews = async (req, res) => {
@@ -131,7 +146,7 @@ exports.getReviews = async (req, res) => {
   }
 }
 
-exports.customerCheckin = async (req, res) => {
+exports.postCustomerCheckin = async (req, res) => {
   try {
     // Extract data from request
     const { customerName, phoneNumber } = req.body
@@ -162,9 +177,41 @@ exports.customerCheckin = async (req, res) => {
     // You'll need to define a function or method to handle this
     // reduceWhatsAppLimit(clientId);
 
-    res.status(201).json({ success: "Check-in recorded and WhatsApp message sent." })
+    res.status(201).json({ success: `Check-in recorded and WhatsApp message sent to ${phoneNumber}.` })
   } catch (error) {
     console.error("Error during customer check-in:", error)
+    res.status(500).json({ error: "Internal Server Error" })
+  }
+}
+
+exports.getCustomerCheckins = async (req, res) => {
+  try {
+    // 1. Extract and set default values for pagination and filtering parameters
+    const { page = 1, limit = 10, fields = "-_id,-createdAt,-updatedAt,-__v", sort = "-date", dateFilter = "all" } = req.query
+    const clientId = req.clientId
+
+    // 2. Validate the client ID format
+    if (!mongoose.Types.ObjectId.isValid(clientId)) {
+      return res.status(400).send("Invalid client ID format.")
+    }
+
+    // 3. Construct the base query with client ID
+    const query = { client: clientId }
+
+    // 4. Apply date filtering based on the dateFilter parameter
+    applyDateFilter(query, dateFilter)
+
+    // 5. Fetch customer checkins based on constructed query
+    const checkins = await CustomerCheckin.find(query)
+      .select(fields ? fields.split(",").join(" ") : "")
+      .sort(sort)
+      .skip((page - 1) * limit)
+      .limit(Number(limit))
+
+    // 6. Send the fetched checkins as the response
+    res.json(checkins)
+  } catch (error) {
+    console.error("Error fetching customer checkins:", error)
     res.status(500).json({ error: "Internal Server Error" })
   }
 }
