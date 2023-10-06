@@ -12,6 +12,13 @@ const dashboardRoutes = require("./Routes/dashboardRoutes");
 dotenv.config(); // Load environment variables
 const app = express();
 
+const corsOptions = {
+  origin: ["http://localhost:4000", "https://nr.reviewonthego.io"],
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  credentials: true,
+  optionsSuccessStatus: 204,
+};
+
 // Connect to MongoDB
 mongoose
   .connect(process.env.CONNECTIONSTRING, {
@@ -29,6 +36,9 @@ app.use(
     store: MongoStore.create({ mongoUrl: process.env.CONNECTIONSTRING }),
     resave: false,
     saveUninitialized: false,
+    cookie: {
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
+    },
   })
 );
 

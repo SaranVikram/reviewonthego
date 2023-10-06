@@ -24,13 +24,16 @@ exports.updateSubscriptionStatus = async (req, res, next) => {
     }
 
     // Check if the SMS limit needs to be reset
-    if (subscription.smsResetDate <= now && subscription.status === "active") {
-      subscription.smsLimit = 500;
+    if (
+      subscription.whatsappApiLimitResetDate <= now &&
+      subscription.status === "active"
+    ) {
+      subscription.whatsappApiLimit = 200;
 
       // Set the next SMS reset date to one month in the future
-      const nextResetDate = new Date(subscription.smsResetDate);
+      const nextResetDate = new Date(subscription.whatsappApiLimitResetDate);
       nextResetDate.setMonth(nextResetDate.getMonth() + 1);
-      subscription.smsResetDate = nextResetDate;
+      subscription.whatsappApiLimitResetDate = nextResetDate;
     }
 
     // Save the updated subscription
