@@ -1,6 +1,6 @@
 const Client = require("../models/Client")
 const Review = require("../models/Review")
-const PageView = require("../Models/PageView") // Import your PageView model
+const PageView = require("../models/PageView") // Import your PageView model
 const mongoose = require("mongoose")
 
 exports.getReviewPage = async (req, res) => {
