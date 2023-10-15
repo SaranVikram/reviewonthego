@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require("mongoose")
 
 const customerCheckinSchema = new mongoose.Schema(
   {
@@ -10,6 +10,10 @@ const customerCheckinSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    isMsgOpen: {
+      type: Boolean,
+      default: false,
+    },
     client: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Client",
@@ -19,11 +23,8 @@ const customerCheckinSchema = new mongoose.Schema(
   {
     timestamps: true, // This will add 'createdAt' and 'updatedAt' fields
   }
-);
+)
 
-const CustomerCheckin = mongoose.model(
-  "CustomerCheckin",
-  customerCheckinSchema
-);
+const CustomerCheckin = mongoose.model("CustomerCheckin", customerCheckinSchema)
 
-module.exports = CustomerCheckin;
+module.exports = CustomerCheckin

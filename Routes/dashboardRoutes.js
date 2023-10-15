@@ -26,6 +26,7 @@ router.post("/verify-otp", dashboardController.verifyClientOTP)
 // Fetch client's dashboard data
 router.get("/client-profile", dashboardController.authenticate, dashboardController.getProfile)
 router.get("/client-stats", dashboardController.authenticate, dashboardController.getStats)
+router.get("/page-views", dashboardController.authenticate, dashboardController.getPageViews)
 router.get("/client-reviews", dashboardController.authenticate, dashboardController.getReviews)
 
 router.post("/customer-checkin", dashboardController.authenticate, dashboardController.postCustomerCheckin)

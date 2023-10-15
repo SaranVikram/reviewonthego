@@ -6,6 +6,7 @@ const PageView = require("../models/PageView")
 const CustomerCheckin = require("../Models/CustomerCheckin")
 const jwt = require("jsonwebtoken")
 const mongoose = require("mongoose")
+const { ObjectId } = require("mongodb")
 const { isValidNumber } = require("libphonenumber-js")
 const crypto = require("crypto")
 const twilio = require("twilio") // If using Twilio for OTP
@@ -194,15 +195,12 @@ exports.getProfile = async (req, res) => {
 
 exports.getStats = async (req, res) => {
   try {
-    const clientId = req.clientId
+    const clientId = new ObjectId(req.clientId) // Convert to ObjectId
     const { dateFilter } = req.query
-    console.log("Request Query:", req.query) // Debugging line
-    console.log("Client ID:", clientId) // Debugging line
 
     // Construct the base query with client ID
     const baseQuery = { client: clientId }
     applyDateFilter(baseQuery, dateFilter) // Assuming you have the applyDateFilter function
-    console.log("Base Query:", baseQuery) // Debugging line
 
     // Fetch counts
     const pageviewsCount = (await PageView.aggregate([{ $match: baseQuery }, { $group: { _id: null, total: { $sum: "$count" } } }]))[0]?.total || 0
@@ -221,6 +219,37 @@ exports.getStats = async (req, res) => {
     }
   } catch (error) {
     console.error("Error fetching stats:", error)
+    res.status(500).json({ error: "Internal Server Error" })
+  }
+}
+
+exports.getPageViews = async (req, res) => {
+  try {
+    const clientId = req.clientId
+
+    // Calculate the date 30 days ago
+    const thirtyDaysAgo = new Date()
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+
+    // Fetch page views for the client in the last 30 days
+    const pageViews = await PageView.find({
+      client: clientId,
+      createdAt: { $gte: thirtyDaysAgo },
+    }).sort({ createdAt: 1 }) // Sort by date in ascending order
+
+    // Initialize an array of zeros for the last 30 days
+    const countsArray = Array(30).fill(0)
+
+    // Populate the countsArray with actual counts
+    pageViews.forEach((doc) => {
+      const index = Math.floor((new Date(doc.createdAt) - thirtyDaysAgo) / (1000 * 60 * 60 * 24))
+      countsArray[index] = doc.count
+    })
+
+    // Send the array back as the response
+    res.status(200).json(countsArray)
+  } catch (error) {
+    console.error("Error fetching page views:", error)
     res.status(500).json({ error: "Internal Server Error" })
   }
 }
@@ -300,8 +329,10 @@ exports.postCustomerCheckin = async (req, res) => {
 exports.getCustomerCheckins = async (req, res) => {
   try {
     // 1. Extract and set default values for pagination and filtering parameters
-    const { page = 1, limit = 10, fields = "-_id,-createdAt,-updatedAt,-__v", sort = "-date", dateFilter = "all" } = req.query
+    const { page = 1, limit = 10, fields = "-_id,-createdAt,-updatedAt,-__v,-client", sort = "-date", dateFilter = "all" } = req.query
     const clientId = req.clientId
+    console.log(req.query)
+    console.log(clientId)
 
     // 2. Validate the client ID format
     if (!mongoose.Types.ObjectId.isValid(clientId)) {
@@ -322,7 +353,8 @@ exports.getCustomerCheckins = async (req, res) => {
       .limit(Number(limit))
 
     // 6. Send the fetched checkins as the response
-    res.json(checkins)
+    res.status(200).json(checkins)
+    console.log(checkins)
   } catch (error) {
     console.error("Error fetching customer checkins:", error)
     res.status(500).json({ error: "Internal Server Error" })
