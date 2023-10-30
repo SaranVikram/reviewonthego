@@ -115,7 +115,7 @@
                     <div class="row logo-container no-gutters">
                         <div class=col><a
                                 href="https://search.google.com/local/writereview?placeid=<%= client.URL %>"
-                                target=_blank><img alt="Google Reviews Logo" data-platform-id=1
+                                target=_blank id="googleReviewLink"><img alt="Google Reviews Logo" data-platform-id=1
                                     class="google-review review-img click-track"
                                     src=/google.png></a>
                         </div>
@@ -278,7 +278,26 @@
                     .show();
              },
           });
-    })
+    }),
+    $('#googleReviewLink').on('click', function(e) {
+    // Prevent the default behavior of the link
+    e.preventDefault();
+
+    // Make the AJAX call to update the click count
+    $.ajax({
+      url: `/click-count/<%= client.id %>`,
+      method: 'POST',
+      success: function(response) {
+        console.log('Successfully updated click count:', response);
+
+        // Redirect to the Google Reviews page 
+        window.open('https://search.google.com/local/writereview?placeid=<%= client.URL %>', '_blank');
+      },
+      error: function(error) {
+        console.error('Error updating click count:', error);
+      }
+    });
+  });
     
 }  ) ;
 

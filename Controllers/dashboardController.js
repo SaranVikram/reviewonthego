@@ -3,6 +3,7 @@ const Client = require("../models/Client")
 const Review = require("../models/Review")
 const Subscription = require("../models/Subscription")
 const PageView = require("../models/PageView")
+const PositiveCount = require("../Models/PositiveCount")
 const CustomerCheckin = require("../Models/CustomerCheckin")
 const jwt = require("jsonwebtoken")
 const mongoose = require("mongoose")
@@ -206,6 +207,7 @@ exports.getStats = async (req, res) => {
     const pageviewsCount = (await PageView.aggregate([{ $match: baseQuery }, { $group: { _id: null, total: { $sum: "$count" } } }]))[0]?.total || 0
     const reviewsCount = await Review.countDocuments(baseQuery)
     const checkinsCount = await CustomerCheckin.countDocuments(baseQuery)
+    const positiveCountsTotal = (await PositiveCount.aggregate([{ $match: baseQuery }, { $group: { _id: null, total: { $sum: "$count" } } }]))[0]?.total || 0
 
     // Send the counts as the response
     if (res) {
@@ -213,6 +215,7 @@ exports.getStats = async (req, res) => {
         pageviewsCount,
         reviewsCount,
         checkinsCount,
+        positiveCountsTotal,
       })
     } else {
       throw new Error("Response object is undefined")
@@ -331,8 +334,6 @@ exports.getCustomerCheckins = async (req, res) => {
     // 1. Extract and set default values for pagination and filtering parameters
     const { page = 1, limit = 10, fields = "-_id,-createdAt,-updatedAt,-__v,-client", sort = "-date", dateFilter = "all" } = req.query
     const clientId = req.clientId
-    console.log(req.query)
-    console.log(clientId)
 
     // 2. Validate the client ID format
     if (!mongoose.Types.ObjectId.isValid(clientId)) {
@@ -354,7 +355,6 @@ exports.getCustomerCheckins = async (req, res) => {
 
     // 6. Send the fetched checkins as the response
     res.status(200).json(checkins)
-    console.log(checkins)
   } catch (error) {
     console.error("Error fetching customer checkins:", error)
     res.status(500).json({ error: "Internal Server Error" })
