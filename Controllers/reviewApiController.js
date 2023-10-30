@@ -1,6 +1,6 @@
-const Client = require("../models/Client")
-const Review = require("../models/Review")
-const PageView = require("../models/PageView") // Import your PageView model
+const Client = require("../Models/Client")
+const Review = require("../Models/Review")
+const PageView = require("../Models/PageView") // Import your PageView model
 const PositiveCount = require("../Models/PositiveCount")
 const mongoose = require("mongoose")
 

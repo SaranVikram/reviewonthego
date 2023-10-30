@@ -1,5 +1,5 @@
-const Client = require("../models/Client") // Path to Client schema
-const Subscription = require("../models/Subscription")
+const Client = require("../Models/Client") // Path to Client schema
+const Subscription = require("../Models/Subscription")
 const templatesArray = require("../utils/templateArray")
 const twilio = require("twilio") // If using Twilio for OTP
 

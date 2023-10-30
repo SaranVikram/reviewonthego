@@ -1,8 +1,8 @@
 const fs = require("fs") // Import the fs module
-const Client = require("../models/Client")
-const Review = require("../models/Review")
-const Subscription = require("../models/Subscription")
-const PageView = require("../models/PageView")
+const Client = require("../Models/Client")
+const Review = require("../Models/Review")
+const Subscription = require("../Models/Subscription")
+const PageView = require("../Models/PageView")
 const PositiveCount = require("../Models/PositiveCount")
 const CustomerCheckin = require("../Models/CustomerCheckin")
 const jwt = require("jsonwebtoken")

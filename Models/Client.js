@@ -1,6 +1,5 @@
-const mongoose = require("mongoose");
-const Subscription = require("./Subscription"); // If using a separate Subscription schema
-const templatesArray = require("../utils/templateArray");
+const mongoose = require("mongoose")
+const templatesArray = require("../utils/templateArray")
 
 const clientSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -15,6 +14,6 @@ const clientSchema = new mongoose.Schema({
   },
   imagePath: { type: String, required: true }, // Path to the uploaded logo file
   subscription: { type: mongoose.Schema.Types.ObjectId, ref: "Subscription" }, // Reference to Subscription schema
-});
+})
 
-module.exports = mongoose.model("Client", clientSchema);
+module.exports = mongoose.model("Client", clientSchema)
