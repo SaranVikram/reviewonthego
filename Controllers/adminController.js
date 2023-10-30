@@ -5,7 +5,12 @@ const twilio = require("twilio") // If using Twilio for OTP
 
 // Admin login page (GET)
 exports.getLogin = (req, res) => {
-  res.render("admin access")
+  try {
+    res.render("admin access")
+  } catch (error) {
+    console.error("Error rendering the admin access page:", error)
+    res.status(500).send("Internal Server Error")
+  }
 }
 
 // Admin login through OTP (POST)
@@ -55,12 +60,6 @@ exports.logout = (req, res) => {
   })
 }
 
-// Admin dashboard (GET)
-exports.getDashboard = async (req, res) => {
-  const clients = await Client.find()
-  res.render("admin-dashboard", { clients })
-}
-
 exports.getCreateClient = (req, res) => {
   try {
     req.flash("success", "Logged in successfully.")
@@ -87,7 +86,6 @@ exports.postCreateClient = async (req, res) => {
   // Validate the required fields
   const { name, company, mobile, email, URL, template, subscriptionType } = req.body
   const imagePath = req.file.filename
-  console.log(req.body)
   if (!name || !company || !mobile || !email || !URL || !imagePath || !template || !subscriptionType) {
     return res.redirect("/admin/create-client?error=All fields are required")
   }
@@ -151,23 +149,4 @@ exports.postCreateClient = async (req, res) => {
     req.flash("error", "There was an error creating client")
     res.redirect("/admin/create-client")
   }
-}
-
-// Edit client page (GET)
-exports.getEditClient = async (req, res) => {
-  const client = await Client.findById(req.params.id)
-  res.render("edit-client", { client })
-}
-
-// Edit client (POST)
-exports.postEditClient = async (req, res) => {
-  // Validate and update client data
-  await Client.findByIdAndUpdate(req.params.id, req.body)
-  res.redirect("/admin/dashboard")
-}
-
-// Delete client (POST)
-exports.deleteClient = async (req, res) => {
-  await Client.findByIdAndDelete(req.params.id)
-  res.redirect("/admin/dashboard")
 }
