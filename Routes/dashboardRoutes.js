@@ -5,7 +5,7 @@ const { updateSubscriptionStatus } = require("../Middlewears/subscriptionUpdater
 const dashboardController = require("../Controllers/dashboardController")
 
 const corsOptions = {
-  origin: ["http://localhost:3000", "https://nr.reviewonthego.io"],
+  origin: ["http://localhost:3000", "https://ss.my-feedback.in"],
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
   optionsSuccessStatus: 204,
