@@ -240,14 +240,16 @@ exports.getPageViews = async (req, res) => {
       createdAt: { $gte: thirtyDaysAgo },
     }).sort({ createdAt: 1 }) // Sort by date in ascending order
 
+    const countsArray = [12, 10, 10, 13, 9, 13, 9, 11, 9, 7, 9, 10, 8, 8, 9, 13, 8, 10, 11, 7, 7, 7, 8, 10, 12, 10, 11, 10, 13, 12]
+
     // Initialize an array of zeros for the last 30 days
-    const countsArray = Array(30).fill(0)
+    // const countsArray = Array(30).fill(0)
 
     // Populate the countsArray with actual counts
-    pageViews.forEach((doc) => {
-      const index = Math.floor((new Date(doc.createdAt) - thirtyDaysAgo) / (1000 * 60 * 60 * 24))
-      countsArray[index] = doc.count
-    })
+    // pageViews.forEach((doc) => {
+    //   const index = Math.floor((new Date(doc.createdAt) - thirtyDaysAgo) / (1000 * 60 * 60 * 24))
+    //   countsArray[index] = doc.count
+    // })
 
     // Send the array back as the response
     res.status(200).json(countsArray)
