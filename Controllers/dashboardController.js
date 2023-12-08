@@ -104,7 +104,13 @@ exports.verifyClientOTP = async (req, res) => {
       })
 
       // Send the token to the client as an HTTP cookie
-      res.cookie("token", token, { httpOnly: true, maxAge: 86400000 }) // 1 day in milliseconds
+      res.cookie("token", token, {
+        httpOnly: true,
+        maxAge: 86400000, // 1 day in milliseconds
+        domain: ".reviewonthego.com", // Set the cookie domain to the main domain
+        secure: true, // Ensure the cookie is only sent over HTTPS
+        sameSite: "None", // Necessary for cross-subdomain cookies with secure flag
+      })
       res.json({ success: "Authenticated successfully" })
     } else {
       // OTP is invalid, show error message
