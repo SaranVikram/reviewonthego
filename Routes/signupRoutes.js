@@ -1,7 +1,8 @@
 const express = require("express")
+const router = express.Router()
 const cors = require("cors")
 const csrf = require("csurf")
-const router = express.Router()
+
 const SignUp = require("../Models/SignUp")
 
 const corsOptions = {
@@ -9,6 +10,7 @@ const corsOptions = {
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
   optionsSuccessStatus: 204,
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"], // Add other headers as needed
 }
 
 // Apply CORS with specific options to dashboard-related routes
