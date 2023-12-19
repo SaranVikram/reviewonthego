@@ -25,6 +25,8 @@ router.get("/get-csrf-token", (req, res) => {
 
 // CSRF error handling
 router.use(function (err, req, res, next) {
+  console.log(req.body)
+
   if (err.code !== "EBADCSRFTOKEN") return next(err)
 
   // handle CSRF token errors here
@@ -36,6 +38,7 @@ router.use(function (err, req, res, next) {
 router.post("/sign-up", async (req, res) => {
   try {
     const { fullName, company, phoneNumber, email } = req.body
+    console.log(req.body)
 
     // Basic validation
     if (!fullName || !company || !phoneNumber || !email) {
