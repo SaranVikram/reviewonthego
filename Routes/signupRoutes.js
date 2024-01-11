@@ -55,6 +55,7 @@ router.post("/sign-up", async (req, res) => {
     // Save to database
     await newUser.save()
 
+    res.header("Access-Control-Allow-Credentials", true)
     res.status(201).json("User signed up successfully")
   } catch (error) {
     if (error.code === 11000) {
