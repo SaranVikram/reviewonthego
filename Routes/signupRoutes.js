@@ -13,10 +13,9 @@ const corsOptions = {
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"], // Add other headers as needed
 }
 
+router.use(csrf({ cookie: true }))
 // Apply CORS with specific options to dashboard-related routes
 router.use(cors(corsOptions))
-
-router.use(csrf({ cookie: true }))
 
 // Endpoint to get CSRF token
 router.get("/get-csrf-token", (req, res) => {
@@ -30,8 +29,7 @@ router.use(function (err, req, res, next) {
   if (err.code !== "EBADCSRFTOKEN") return next(err)
 
   // handle CSRF token errors here
-  res.status(403)
-  res.send("CSRF token mismatch or missing")
+  res.status(403).json({ error: "CSRF token mismatch or missing" })
 })
 
 // Signup route
