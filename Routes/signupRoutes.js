@@ -1,6 +1,7 @@
 const express = require("express")
-const router = express.Router()
+
 const cors = require("cors")
+const router = express.Router()
 // const csrf = require("csurf")
 
 const SignUp = require("../Models/SignUp")
