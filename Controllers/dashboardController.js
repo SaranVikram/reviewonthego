@@ -10,7 +10,7 @@ const mongoose = require("mongoose")
 const { ObjectId } = require("mongodb")
 const { isValidNumber } = require("libphonenumber-js")
 const crypto = require("crypto")
-const twilio = require("twilio") // If using Twilio for OTP
+const { sendWhatsAppMessage, reduceWhatsAppLimit } = require("../utils/whatsappService");
 
 exports.authenticate = (req, res, next) => {
   // Get the IP address of the client
@@ -104,13 +104,15 @@ exports.verifyClientOTP = async (req, res) => {
       })
 
       // Send the token to the client as an HTTP cookie
-      res.cookie("token", token, {
-        httpOnly: true,
-        maxAge: 86400000, // 1 day in milliseconds
-        domain: ".reviewonthego.com", // Set the cookie domain to the main domain
-        secure: true, // Ensure the cookie is only sent over HTTPS
-        sameSite: "None", // Necessary for cross-subdomain cookies with secure flag
-      })
+      const isProduction = process.env.NODE_ENV === "production";
+
+res.cookie("token", token, {
+  httpOnly: true,
+  maxAge: 86400000, // 1 day in milliseconds
+  domain: isProduction ? ".reviewonthego.com" : undefined, // Set domain only in production
+  secure: isProduction, // Enable secure only in production
+  sameSite: isProduction ? "None" : "Lax", // Use "None" in production, "Lax" in development
+});
       res.json({ success: "Authenticated successfully" })
     } else {
       // OTP is invalid, show error message
@@ -311,6 +313,24 @@ exports.postCustomerCheckin = async (req, res) => {
     }
     const clientId = req.clientId
 
+    // Find the client and populate the subscription
+    const client = await Client.findById(clientId).populate("subscription");
+
+    if (!client) {
+      return res.status(404).json({ error: "Client not found" });
+    }
+
+    // Check if the subscription exists and is active
+    const subscription = client.subscription;
+    if (!subscription || subscription.status !== "active") {
+      return res.status(403).json({ error: "Subscription is inactive or not found" });
+    }
+
+    // Check if the WhatsApp API limit is greater than 0
+    if (subscription.whatsappApiLimit <= 0) {
+      return res.status(403).json({ error: "WhatsApp API limit exhausted" });
+    }
+
     // Create a new checkin using the create operation
     const newCheckin = await CustomerCheckin.create({
       customerName,
@@ -319,12 +339,10 @@ exports.postCustomerCheckin = async (req, res) => {
     })
 
     // Send a WhatsApp message to the client
-    // You'll need to define the sendWhatsAppMessage function or method
-    // sendWhatsAppMessage(clientId, `New customer check-in: ${customerName}, Phone: ${phoneNumber}`);
+    await sendWhatsAppMessage(clientId, `New customer check-in: ${customerName}, Phone: ${phoneNumber}`, phoneNumber);
 
     // Reduce the WhatsApp API limit for the client
-    // You'll need to define a function or method to handle this
-    // reduceWhatsAppLimit(clientId);
+    await reduceWhatsAppLimit(clientId);
 
     res.status(201).json({
       success: `Check-in recorded and WhatsApp message sent to ${phoneNumber}.`,
