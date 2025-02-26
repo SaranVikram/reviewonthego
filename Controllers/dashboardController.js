@@ -346,7 +346,7 @@ exports.postCustomerCheckin = async (req, res) => {
 
     // Construct the template message object
     const templateMessage = {
-      template_name: "review_template",
+      template_name: "review_template1",
       parameters: [
         { name: "name", value: customerName },
         { name: "clientId", value: `${clientId}?name=${customerName}&phone=${phoneNumber}` },
