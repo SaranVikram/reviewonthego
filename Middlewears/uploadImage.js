@@ -1,21 +1,57 @@
-const path = require("path")
-const multer = require("multer")
+const multer = require("multer");
+const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 
-// Storage Engin That Tells/Configures Multer for where (destination) and how (filename) to save/upload our files
-const fileStorageEngine = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "./public/client-logos") //important this is a direct path from our current file to storage location
+// Configure Multer to store files in memory
+const upload = multer({ storage: multer.memoryStorage() });
+
+console.log("ENV TEST - R2_ACCESS_KEY_ID:", process.env.R2_ACCESS_KEY_ID);
+console.log("ENV TEST - R2_SECRET_ACCESS_KEY:", process.env.R2_SECRET_ACCESS_KEY);
+
+
+// Configure the S3 client for Cloudflare R2
+const s3Client = new S3Client({
+  region: "auto",
+  endpoint: "https://3a1668b00e517475c8814a6bdf4f30b0.r2.cloudflarestorage.com",
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY_ID, 
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
   },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "--" + file.originalname)
-  },
-})
+});
 
-// The Multer Middleware that is passed to routes that will receive income requests with file data (multipart/formdata)
-// You can create multiple middleware each with a different storage engine config so save different files in different locations on server
-const upload = multer({ storage: fileStorageEngine })
 
-;(module.exports.upload = upload.single("image")),
-  (request, response, next) => {
-    next()
+// Middleware to handle file upload and upload to R2
+module.exports.upload = upload.single("image");
+
+module.exports.uploadToR2 = async (req, res, next) => {
+  try { 
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+
+    const file = req.file;
+    const fileName = Date.now() + "--" + req.body.company;
+
+    // Upload the file to R2
+    const uploadParams = {
+      Bucket: "reviewonthego-client", // Replace with your R2 bucket name
+      Key: fileName, // File name in R2
+      Body: file.buffer, // File data
+      ContentType: file.mimetype, // File type (e.g., image/jpeg)
+    };
+
+    const command = new PutObjectCommand(uploadParams);
+    await s3Client.send(command);
+
+    // Generate the public URL for the uploaded file
+    const fileUrl = `https://reviewonthego-client.3a1668b00e517475c8814a6bdf4f30b0.r2.cloudflarestorage.com/${fileName}`;
+
+   // Attach the file URL to the request object
+   req.fileUrl = fileUrl;
+
+   // Call the next middleware or route handler
+   next();
+  } catch (error) {
+    console.error("Error uploading to R2:", error);
+    res.status(500).json({ error: "Failed to upload file" });
   }
+};

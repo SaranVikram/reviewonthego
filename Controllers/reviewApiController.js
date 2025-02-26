@@ -6,6 +6,8 @@ const mongoose = require("mongoose")
 
 exports.getReviewPage = async (req, res) => {
   const clientId = req.params.clientId
+  const customerName = req.query.name
+  const phoneNumber = req.query.phone
 
   // Check if the provided clientId is a valid MongoDB ObjectId
   if (!mongoose.Types.ObjectId.isValid(clientId)) {
@@ -39,7 +41,7 @@ exports.getReviewPage = async (req, res) => {
     }
 
     // Render the client review page
-    res.render("review-client", { client })
+    res.render("review-client", { client, customerName,phoneNumber })
   } catch (error) {
     console.error("Error fetching client data:", error)
     return res.status(500).send("Error fetching client data.")

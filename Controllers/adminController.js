@@ -85,7 +85,7 @@ exports.getCreateClient = (req, res) => {
 exports.postCreateClient = async (req, res) => {
   // Validate the required fields
   const { name, company, mobile, email, URL, template, subscriptionType } = req.body
-  const imagePath = req.file.filename
+  const imagePath = req.fileUrl;
   if (!name || !company || !mobile || !email || !URL || !imagePath || !template || !subscriptionType) {
     return res.redirect("/admin/create-client?error=All fields are required")
   }
@@ -150,3 +150,93 @@ exports.postCreateClient = async (req, res) => {
     res.redirect("/admin/create-client")
   }
 }
+
+exports.getrenewSubscription = (req, res) => {
+  try {
+    req.flash("success", "Logged in successfully.")
+    const successMessages = req.flash("success")
+    res.render("renew-subscription", {
+      messages: {
+        success: successMessages[0],
+      },
+      templates: templatesArray,
+    })
+  } catch (error) {
+    console.error("Error rendering renew page:", error)
+    req.flash("error", "There was an error rendering the page.")
+    const errorMessages = req.flash("error")
+    res.status(404).render("404", {
+      messages: {
+        error: errorMessages[0],
+      },
+    })
+  }
+}
+
+exports.renewSubscription = async (req, res) => {
+  try {
+    // Extract mobile and subscriptionType from request
+    const { mobile, subscriptionType } = req.body;
+    console.log(subscriptionType);
+    
+
+    // Find the client by mobile number and populate the subscription
+    const client = await Client.findOne({ mobile }).populate("subscription");
+
+    if (!client) {
+      return res.status(404).json({ error: "Client not found" });
+    }
+
+    const subscription = client.subscription;
+
+    if (!subscription) {
+      return res.status(400).json({ error: "No subscription found for this client" });
+    }
+
+    // Set new start date as the current date
+    const startDate = new Date();
+    let endDate = new Date(startDate);
+
+    // Update endDate based on subscription type
+    switch (subscriptionType) {
+      case "trial":
+        endDate.setDate(endDate.getDate() + 14);
+        break;
+      case "3 months":
+        endDate.setMonth(endDate.getMonth() + 3);
+        break;
+      case "6 months":
+        endDate.setMonth(endDate.getMonth() + 6);
+        break;
+      case "1 year":
+        endDate.setFullYear(endDate.getFullYear() + 1);
+        break;
+      case "3 years":
+        endDate.setFullYear(endDate.getFullYear() + 3);
+        break;
+      default:
+        return res.status(400).json({ error: "Invalid subscription type" });
+    }
+
+    // Calculate the WhatsApp API limit reset date (1 month from start date)
+    const whatsappApiLimitResetDate = new Date(startDate);
+    whatsappApiLimitResetDate.setMonth(whatsappApiLimitResetDate.getMonth() + 1);
+
+    // Update subscription details
+    subscription.startDate = startDate;
+    subscription.endDate = endDate;
+    subscription.type = subscriptionType;
+    subscription.whatsappApiLimitResetDate = whatsappApiLimitResetDate;
+    subscription.status = "active";
+    subscription.whatsappApiLimit = 200;
+
+    // Save the updated subscription
+    await subscription.save();
+
+    req.flash("sucess", "subscription renewed succefully")
+    res.redirect("/admin/renew-subscription")
+  } catch (error) {
+    console.error("Error renewing subscription:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};

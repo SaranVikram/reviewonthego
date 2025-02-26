@@ -88,7 +88,7 @@
             </div>
         </div>
         <div class=body-container>
-            <h1 class=greeting-text>Hi There!</h1>
+            <h1 class=greeting-text>Hi <%= customerName ? customerName : "there" %>!</h1>
             <p class=review-text>How was your experience with <%= client.company %>?</p>
         </div>
         <div class=button-container><a href=# class="primary-btn review-click" data-toggle=modal
@@ -143,15 +143,14 @@
                         style="margin-top: 10px;display: none;"></span>
                     <div class=starrr></div>
                     <p class="text18 text-center mb-1">We value your feedback</p>
-                    <div class="form-group mb-2"><input type=email class="form-control feedback-name" placeholder=Name*>
-                    </div>
-                    <div class="form-group mb-2"><input id=phone type=number class="form-control feedback-phone"
-                            placeholder=Phone*></div>
+                    <div class="form-group mb-2"><input type=email class="form-control feedback-name" placeholder=Name* value="<%=customerName || '' %>" </div>
+                    <div class="form-group mb-2"><input id=phone type=text class="form-control feedback-phone"
+                            placeholder=Phone* value=" <%=phoneNumber || '' %>"></div>
                     <div class=form-group><textarea class="form-control feedback-text"
                             placeholder="How can we improve?"></textarea></div>
                     <div class="form-group text-center mt-2">
                         <p style="margin-bottom: 0px!important;"><span style="white-space: pre-line">By submitting
-                                feedback, </span>You agree to our <a href=#>data
+                                feedback, </span>You agree to our <a href="https://reviewonthego.in/data-policy">data
                                 policy</a></p>
                     </div>
                 </div>

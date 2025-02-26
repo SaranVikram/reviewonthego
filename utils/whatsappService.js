@@ -3,8 +3,8 @@ const Client = require("../Models/Client");
 const Subscription = require("../Models/Subscription");
 
 // WATI.io API configuration
-const WATI_API_KEY = 'your_wati_api_key'; // Replace with your actual WATI.io API key
-const WATI_API_ENDPOINT = 'https://api.wati.io/v1/sendTemplateMessage';
+const WATI_API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJkM2U2MDdjNC1lZDQ5LTQzZGItYTM4Yy04ODBmZDRiM2Y1YTQiLCJ1bmlxdWVfbmFtZSI6InNhcmFuLnZpa3JhbUB5YWhvby5jb20iLCJuYW1laWQiOiJzYXJhbi52aWtyYW1AeWFob28uY29tIiwiZW1haWwiOiJzYXJhbi52aWtyYW1AeWFob28uY29tIiwiYXV0aF90aW1lIjoiMDIvMTcvMjAyNSAxNjoxMTowNSIsInRlbmFudF9pZCI6IjQwNjQzNSIsImRiX25hbWUiOiJtdC1wcm9kLVRlbmFudHMiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBRE1JTklTVFJBVE9SIiwiZXhwIjoyNTM0MDIzMDA4MDAsImlzcyI6IkNsYXJlX0FJIiwiYXVkIjoiQ2xhcmVfQUkifQ.3UWCUnA-VLRJCCciRrQ8drIwnBkidCSeH7CVPp2BEBU'; // Replace with your actual WATI.io API key
+const WATI_API_ENDPOINT = 'https://live-mt-server.wati.io/406435/api/v1/sendTemplateMessage';
 
 /**
  * Function to send WhatsApp message using WATI.io API
@@ -12,16 +12,15 @@ const WATI_API_ENDPOINT = 'https://api.wati.io/v1/sendTemplateMessage';
  * @param {string} message - The message to send
  * @param {string} number - WhatsApp number of the client (with country code, e.g., +1234567890)
  */
-async function sendWhatsAppMessage(clientId, message, number) {
+async function sendWhatsAppMessage(clientId, templateMessage, number) {
     try {
+        const { template_name, parameters } = templateMessage;
         const response = await axios.post(
             WATI_API_ENDPOINT,
             {
-                template_name: 'generic_message', // Use a generic template or customize as needed
+                template_name,
                 broadcast_name: `Message_${clientId}`,
-                parameters: {
-                    message: message, // Pass the message as a parameter
-                },
+                parameters, // Use parameters from the templateMessage object
             },
             {
                 headers: {

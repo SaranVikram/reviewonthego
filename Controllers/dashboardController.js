@@ -65,14 +65,20 @@ exports.postClientLogin = async (req, res) => {
 
     const otp = Math.floor(1000 + Math.random() * 9000) // Generate 4-digit OTP
 
-    // Uncomment and customize with your Twilio credentials and settings
-    // const clientTwilio = twilio("TWILIO_ACCOUNT_SID", "TWILIO_AUTH_TOKEN");
-    // await clientTwilio.messages.create({
-    //   body: `Your OTP is ${otp}`,
-    //   from: "YOUR_TWILIO_PHONE_NUMBER",
-    //   to: mobile,
-    // });
+    //  Construct the template message object
+     const templateMessage = {
+      template_name: "auth_req",
+      parameters: [
+        { name: "1", value: otp },
+      ],
+    };
+
+    // Send a WhatsApp message to the client
+    await sendWhatsAppMessage("64e1a8aa5c4d25eda26bb453", templateMessage, mobile);
     console.log(otp)
+
+    //  // Reduce the WhatsApp API limit for the client
+    await reduceWhatsAppLimit("64e1a8aa5c4d25eda26bb453");
 
     // Store OTP and client ID in session
     req.session.otp = otp
@@ -338,8 +344,19 @@ exports.postCustomerCheckin = async (req, res) => {
       client: clientId,
     })
 
+    // Construct the template message object
+    const templateMessage = {
+      template_name: "review_template",
+      parameters: [
+        { name: "name", value: customerName },
+        { name: "clientId", value: `${clientId}?name=${customerName}&phone=${phoneNumber}` },
+        { name: "company", value: client.company },
+        { name: "imagepath", value:`https://cdn.reviewonthego.in//${client.imagePath}`},
+      ],
+    };
+
     // Send a WhatsApp message to the client
-    await sendWhatsAppMessage(clientId, `New customer check-in: ${customerName}, Phone: ${phoneNumber}`, phoneNumber);
+    await sendWhatsAppMessage(clientId, templateMessage, phoneNumber);
 
     // Reduce the WhatsApp API limit for the client
     await reduceWhatsAppLimit(clientId);
