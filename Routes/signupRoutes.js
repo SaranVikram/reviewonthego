@@ -7,7 +7,7 @@ const router = express.Router()
 const SignUp = require("../Models/SignUp")
 
 const corsOptions = {
-  origin: ["http://localhost:3000", "https://www.reviewonthego.com"],
+  origin: ["http://localhost:3000", "https://www.reviewonthego.in"],
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
   optionsSuccessStatus: 204,
