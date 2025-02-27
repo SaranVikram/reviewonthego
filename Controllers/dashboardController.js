@@ -11,6 +11,8 @@ const { ObjectId } = require("mongodb")
 const { isValidNumber } = require("libphonenumber-js")
 const crypto = require("crypto")
 const { sendWhatsAppMessage, reduceWhatsAppLimit } = require("../utils/whatsappService");
+const { trackSentMessage } = require("./webhookController")
+
 
 exports.authenticate = (req, res, next) => {
   // Get the IP address of the client
@@ -74,11 +76,12 @@ exports.postClientLogin = async (req, res) => {
     };
 
     // Send a WhatsApp message to the client
-    await sendWhatsAppMessage("64e1a8aa5c4d25eda26bb453", templateMessage, mobile);
+    const response = await sendWhatsAppMessage("64e1a8aa5c4d25eda26bb453", templateMessage, mobile);
     console.log(otp)
 
-    //  // Reduce the WhatsApp API limit for the client
-    await reduceWhatsAppLimit("64e1a8aa5c4d25eda26bb453");
+    if(response.result) {
+      trackSentMessage(response.data.contact.id, mobile, "64e1a8aa5c4d25eda26bb453")
+    }
 
     // Store OTP and client ID in session
     req.session.otp = otp
@@ -351,19 +354,25 @@ exports.postCustomerCheckin = async (req, res) => {
         { name: "name", value: customerName },
         { name: "clientId", value: `${clientId}?name=${customerName}&phone=${phoneNumber}` },
         { name: "company", value: client.company },
-        { name: "imagepath", value:`https://cdn.reviewonthego.in//${client.imagePath}`},
+        { name: "imagepath", value:`https://cdn.reviewonthego.in/${client.imagePath}`},
       ],
     };
 
     // Send a WhatsApp message to the client
-    await sendWhatsAppMessage(clientId, templateMessage, phoneNumber);
-
-    // Reduce the WhatsApp API limit for the client
-    await reduceWhatsAppLimit(clientId);
-
+   const response = await sendWhatsAppMessage(clientId, templateMessage, phoneNumber);
+  if(response.result) {
+    trackSentMessage(response.data.contact.id, phoneNumber, clientId)
     res.status(201).json({
-      success: `Check-in recorded and WhatsApp message sent to ${phoneNumber}.`,
+      success: `WhatsApp message sent to ${phoneNumber}.`,
     })
+  } else {
+    res.status(400).json({
+      error:"Failed to send message"
+    })
+  }
+   
+
+   
   } catch (error) {
     console.error("Error during customer check-in:", error)
     res.status(500).json({ error: "Internal Server Error" })

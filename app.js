@@ -8,13 +8,14 @@ const dotenv = require("dotenv")
 const adminRoutes = require("./Routes/adminRoutes")
 const reviewApiRoutes = require("./Routes/reviewApiRoutes")
 const dashboardRoutes = require("./Routes/dashboardRoutes")
+const webhookRoutes = require("./Routes/webhookRoutes")
 const signupRoutes = require("./Routes/signupRoutes")
 
 dotenv.config() // Load environment variables
 const app = express()
 
 const corsOptions = {
-  origin: ["http://localhost:4000", "https://nr.reviewonthego.io"],
+  origin: ["http://localhost:4000", "https://www.reviewonthego.in"],
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
   optionsSuccessStatus: 204,
@@ -60,6 +61,7 @@ app.use(express.static("public"))
 app.use("/admin", adminRoutes)
 app.use("/", reviewApiRoutes)
 app.use("/api", dashboardRoutes)
+app.use("/api", webhookRoutes)
 app.use("/api", signupRoutes)
 
 // Start the server
