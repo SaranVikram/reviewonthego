@@ -115,7 +115,7 @@ exports.verifyClientOTP = async (req, res) => {
 res.cookie("token", token, {
   httpOnly: true,
   maxAge: 86400000, // 1 day in milliseconds
-  domain: isProduction ? ".reviewonthego.com" : undefined, // Set domain only in production
+  domain: isProduction ? ".reviewonthego.in" : undefined, // Set domain only in production
   secure: isProduction, // Enable secure only in production
   sameSite: isProduction ? "None" : "Lax", // Use "None" in production, "Lax" in development
 });
