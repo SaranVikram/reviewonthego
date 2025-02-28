@@ -33,5 +33,5 @@ exports.watiMessageDeliveredHook = (req, res) => {
 exports.trackSentMessage = (requestTimestamp,responseTimestamp,clientId) => {
    // ✅ Store both timestamps in the Map with clientId as the value
    sentMessages.set(requestTimestamp, { responseTimestamp, clientId });
-  console.log(`Tracked client ${clientId} at timestamp ${timestamp}`);
+ 
 };
