@@ -84,7 +84,7 @@
     <div class=main-contaner>
         <div class=header>
             <div class=company-logo><img alt="<%= client.company %> logo" id=logo_img class=logo
-                    src=/client-logos/<%= client.imagePath %>>
+                    src="https://cdn.reviewonthego.in/<%= client.imagePath %>">
             </div>
         </div>
         <div class=body-container>
@@ -135,7 +135,7 @@
             <div class=modal-content>
                 <div class=modal-header>
                     <div class=company-logo><img alt=" <%= client.company %> logo" class=logo
-                            src=/client-logos/<%= client.imagePath %>>
+                      src="https://cdn.reviewonthego.in/<%= client.imagePath %>">
                     </div><button type=button class="close text-primary" data-dismiss=modal aria-label=Close><span
                             aria-hidden=true>&times;</span></button>
                 </div>
@@ -214,7 +214,7 @@
         if (`<%= client.imagePath %>`) {
           var r = new Image();
 
-          r.src = window.location.origin + "/client-logos/" + `<%= client.imagePath %>` ;
+          r.src = "https://cdn.reviewonthego.in/<%= client.imagePath %>";
           const a = new ColorThief();
           (r.onload = function () {
             l(a.getColor(r));
