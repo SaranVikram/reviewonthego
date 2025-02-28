@@ -364,11 +364,13 @@ exports.postCustomerCheckin = async (req, res) => {
       ],
     };
 
-    // Send a WhatsApp message to the client
-   const response = await sendWhatsAppMessage(clientId, templateMessage, phoneNumber);
+    const [timestamp, response] = await Promise.all([
+      Promise.resolve(Math.floor(Date.now() / 1000).toString()), // Capture timestamp
+      sendWhatsAppMessage(clientId, templateMessage, phoneNumber), // Send message
+  ]);
   if(response.result) {
     // Track using the current timestamp and phone number
-    trackSentMessage(clientId);
+    trackSentMessage(timestamp,clientId);
     res.status(200).json({
       success: `WhatsApp message sent to ${phoneNumber}.`,
     })

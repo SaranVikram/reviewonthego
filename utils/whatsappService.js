@@ -33,7 +33,6 @@ async function sendWhatsAppMessage(clientId, templateMessage, number) {
             }
         );
 
-        console.log(`Message sent successfully to ${number}:`, response);
         return response.data;
     } catch (error) {
         console.error(`Failed to send message to ${number}:`, error.response ? error.response.data : error.message);

@@ -29,9 +29,8 @@ exports.watiMessageDeliveredHook = (req, res) => {
 
 
 // When sending a message, track the clientId with the timestamp from the send response
-exports.trackSentMessage = (clientId) => {
+exports.trackSentMessage = (timestamp,clientId) => {
   // Generate a timestamp (Unix seconds)
-  const timestamp = Math.floor(Date.now() / 1000).toString();
   sentMessages.set(timestamp, clientId);
   console.log(`Tracked client ${clientId} at timestamp ${timestamp}`);
 };
