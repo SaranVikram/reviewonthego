@@ -8,7 +8,7 @@ const CustomerCheckin = require("../Models/CustomerCheckin")
 const jwt = require("jsonwebtoken")
 const mongoose = require("mongoose")
 const { ObjectId } = require("mongodb")
-const { isValidNumber } = require("libphonenumber-js")
+const { isValidNumber, PhoneNumber } = require("libphonenumber-js")
 const crypto = require("crypto")
 const { sendWhatsAppMessage, reduceWhatsAppLimit } = require("../utils/whatsappService");
 const { trackSentMessage } = require("./webhookController")
@@ -360,11 +360,11 @@ exports.postCustomerCheckin = async (req, res) => {
     };
 
     // Send a WhatsApp message to the client
-   const response = await sendWhatsAppMessage(clientId, templateMessage, cleanedNumber);
+   const response = await sendWhatsAppMessage(clientId, templateMessage, phoneNumber);
   if(response.result) {
-    trackSentMessage(response.contact.id, cleanedNumber, clientId)
+    trackSentMessage(response.contact.id, phoneNumber, clientId)
     res.status(200).json({
-      success: `WhatsApp message sent to ${cleanedNumber}.`,
+      success: `WhatsApp message sent to ${phoneNumber}.`,
     })
   } else {
     res.status(400).json({
