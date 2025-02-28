@@ -9,28 +9,29 @@ exports.watiMessageDeliveredHook = (req, res) => {
     const { eventType, statusString, timestamp } = req.body;
 
     if (eventType === "sentMessageDELIVERED" && statusString === "Delivered") {
-
-      if (sentMessages.has(timestamp)) {
-        const clientId = sentMessages.get(timestamp);
-        reduceWhatsAppLimit(clientId);
-        sentMessages.delete(timestamp); // Cleanup
-        console.log(`API limit reduced for client ${clientId}`);
-      } else {
-        console.warn(`No clientId found for timestamp ${timestamp}`);
+      for (const [requestTimestamp, { responseTimestamp, clientId }] of sentMessages.entries()) {
+        
+        // ✅ Check if timestamp falls within request & response time
+        if (timestamp >= requestTimestamp && timestamp <= responseTimestamp) {
+          reduceWhatsAppLimit(clientId);
+          sentMessages.delete(requestTimestamp); // Cleanup
+          console.log(`✅ API limit reduced for client ${clientId}`);
+          break; // Exit loop after processing
+        }
       }
     }
 
     res.sendStatus(200);
   } catch (error) {
-    console.error("Webhook error:", error);
+    console.error("❌ Webhook error:", error);
     res.status(500).json({ error: "Internal error" });
   }
 };
 
 
 // When sending a message, track the clientId with the timestamp from the send response
-exports.trackSentMessage = (timestamp,clientId) => {
-  // Generate a timestamp (Unix seconds)
-  sentMessages.set(timestamp, clientId);
+exports.trackSentMessage = (requestTimestamp,responseTimestamp,clientId) => {
+   // ✅ Store both timestamps in the Map with clientId as the value
+   sentMessages.set(requestTimestamp, { responseTimestamp, clientId });
   console.log(`Tracked client ${clientId} at timestamp ${timestamp}`);
 };

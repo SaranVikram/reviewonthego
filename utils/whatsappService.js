@@ -14,6 +14,8 @@ const WATI_API_ENDPOINT = 'https://live-mt-server.wati.io/406435/api/v1/sendTemp
  */
 async function sendWhatsAppMessage(clientId, templateMessage, number) {
     try {
+        // ✅ Capture timestamp **before** sending request
+const requestTimestamp = Math.floor(Date.now() / 1000).toString();
         const { template_name, parameters } = templateMessage;
         const response = await axios.post(
             WATI_API_ENDPOINT,
@@ -32,8 +34,10 @@ async function sendWhatsAppMessage(clientId, templateMessage, number) {
                 },
             }
         );
+        // ✅ Capture timestamp **after** response is received
+const responseTimestamp = Math.floor(Date.now() / 1000).toString();
 
-        return response.data;
+return { data: response.data, requestTimestamp, responseTimestamp };
     } catch (error) {
         console.error(`Failed to send message to ${number}:`, error.response ? error.response.data : error.message);
         throw error;
