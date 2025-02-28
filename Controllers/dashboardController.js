@@ -353,7 +353,7 @@ exports.postCustomerCheckin = async (req, res) => {
       template_name: "review_template1",
       parameters: [
         { name: "name", value: customerName },
-        { name: "clientId", value: `${clientId}?name=${customerName}&phone=${cleanedNumber}` },
+        { name: "clientId", value: encodeURIComponent(`${clientId}?name=${customerName}&phone=${cleanedNumber}`) },
         { name: "company", value: client.company },
         { name: "imagepath", value:`https://cdn.reviewonthego.in/${client.imagePath}`},
       ],
