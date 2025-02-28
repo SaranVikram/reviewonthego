@@ -8,9 +8,9 @@ const CustomerCheckin = require("../Models/CustomerCheckin")
 const jwt = require("jsonwebtoken")
 const mongoose = require("mongoose")
 const { ObjectId } = require("mongodb")
-const { isValidNumber, PhoneNumber } = require("libphonenumber-js")
+const { isValidNumber } = require("libphonenumber-js")
 const crypto = require("crypto")
-const { sendWhatsAppMessage, reduceWhatsAppLimit } = require("../utils/whatsappService");
+const { sendWhatsAppMessage } = require("../utils/whatsappService");
 const { trackSentMessage } = require("./webhookController")
 
 
@@ -348,12 +348,17 @@ exports.postCustomerCheckin = async (req, res) => {
       client: clientId,
     })
 
+       // Construct the clientId link with properly encoded values
+       const encodedName = encodeURIComponent(customerName);
+       const encodedPhone = encodeURIComponent(cleanedNumber); 
+
     // Construct the template message object
+ 
     const templateMessage = {
       template_name: "review_template1",
       parameters: [
         { name: "name", value: customerName },
-        { name: "clientId", value: encodeURIComponent(`${clientId}?name=${customerName}&phone=${cleanedNumber}`) },
+        { name: "clientId", value: `${clientId}?name=${encodedName}&phone=${encodedPhone}` },
         { name: "company", value: client.company },
         { name: "imagepath", value:`https://cdn.reviewonthego.in/${client.imagePath}`},
       ],
@@ -362,7 +367,8 @@ exports.postCustomerCheckin = async (req, res) => {
     // Send a WhatsApp message to the client
    const response = await sendWhatsAppMessage(clientId, templateMessage, phoneNumber);
   if(response.result) {
-    trackSentMessage(response.contact.id, phoneNumber, clientId)
+    // Track using the current timestamp and phone number
+    trackSentMessage(clientId);
     res.status(200).json({
       success: `WhatsApp message sent to ${phoneNumber}.`,
     })

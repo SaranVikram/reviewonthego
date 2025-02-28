@@ -6,44 +6,32 @@ const sentMessages = new Map();
 // Function to handle WATI webhook events
 exports.watiMessageDeliveredHook = (req, res) => {
   try {
-    const { eventType, payload } = req.body;
+    const { eventType, statusString, timestamp } = req.body;
 
-    // Check if the event is a message status update
-    if (eventType === 'sentMessageDELIVERED') {
-      const { id, statusString, recipientId } = payload;
+    if (eventType === "sentMessageDELIVERED" && statusString === "Delivered") {
 
-      // Check if the message was sent via /customer-checkin
-      if (sentMessages.has(id)) {
-        console.log(`Message ${id} status: ${statusString}`);
-
-        // Reduce the API limit only if the message is delivered
-        if (statusString === 'Delivered') {
-          reduceWhatsAppLimit(sentMessages.get(id)?.clientId);
-          console.log(`API limit reduced. New limit: ${apiLimit}`);
-
-          // Remove the message from the tracking store
-          sentMessages.delete(id);
-          
-        }
+      if (sentMessages.has(timestamp)) {
+        const clientId = sentMessages.get(timestamp);
+        reduceWhatsAppLimit(clientId);
+        sentMessages.delete(timestamp); // Cleanup
+        console.log(`API limit reduced for client ${clientId}`);
       } else {
-        console.warn(`Message ${id} not found in sentMessages. It may have been already processed.`);
+        console.warn(`No clientId found for timestamp ${timestamp}`);
       }
     }
 
-    // Respond to the webhook with a 200 OK
     res.sendStatus(200);
   } catch (error) {
-    console.error('Error in watiMessageDeliveredHook:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error while processing the webhook.',
-    });
+    console.error("Webhook error:", error);
+    res.status(500).json({ error: "Internal error" });
   }
 };
 
 
-// Function to track sent messages (called from the /customer-checkin route)
-exports.trackSentMessage = (messageId, phoneNumber, clientId) => {
-    sentMessages.set(messageId, { phoneNumber, clientId });
-    console.log(`Tracked message ${messageId} for ${phoneNumber} (Client: ${clientId})`);
-  };
+// When sending a message, track the clientId with the timestamp from the send response
+exports.trackSentMessage = (clientId) => {
+  // Generate a timestamp (Unix seconds)
+  const timestamp = Math.floor(Date.now() / 1000).toString();
+  sentMessages.set(timestamp, clientId);
+  console.log(`Tracked client ${clientId} at timestamp ${timestamp}`);
+};
