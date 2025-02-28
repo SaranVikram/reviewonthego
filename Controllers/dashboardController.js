@@ -320,6 +320,7 @@ exports.postCustomerCheckin = async (req, res) => {
     if (!phoneNumber || typeof phoneNumber !== "string" || (phoneNumber.length !== 12 && phoneNumber.length !== 13)) {
       return res.status(400).json({ error: "Invalid phone number" })
     }
+    const cleanedNumber = phoneNumber.replace(/^\+91/, "");
     const clientId = req.clientId
 
     // Find the client and populate the subscription
@@ -352,18 +353,18 @@ exports.postCustomerCheckin = async (req, res) => {
       template_name: "review_template1",
       parameters: [
         { name: "name", value: customerName },
-        { name: "clientId", value: `${clientId}?name=${customerName}&phone=${phoneNumber}` },
+        { name: "clientId", value: `${clientId}?name=${customerName}&phone=${cleanedNumber}` },
         { name: "company", value: client.company },
         { name: "imagepath", value:`https://cdn.reviewonthego.in/${client.imagePath}`},
       ],
     };
 
     // Send a WhatsApp message to the client
-   const response = await sendWhatsAppMessage(clientId, templateMessage, phoneNumber);
+   const response = await sendWhatsAppMessage(clientId, templateMessage, cleanedNumber);
   if(response.result) {
-    trackSentMessage(response.contact.id, phoneNumber, clientId)
+    trackSentMessage(response.contact.id, cleanedNumber, clientId)
     res.status(200).json({
-      success: `WhatsApp message sent to ${phoneNumber}.`,
+      success: `WhatsApp message sent to ${cleanedNumber}.`,
     })
   } else {
     res.status(400).json({
