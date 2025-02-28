@@ -19,7 +19,7 @@ async function sendWhatsAppMessage(clientId, templateMessage, number) {
             WATI_API_ENDPOINT,
             {
                 template_name,
-                broadcast_name: `Message_${clientId}`,
+                broadcast_name: `Reviewonthego`,
                 parameters, // Use parameters from the templateMessage object
             },
             {

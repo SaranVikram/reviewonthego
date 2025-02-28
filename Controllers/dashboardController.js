@@ -80,7 +80,7 @@ exports.postClientLogin = async (req, res) => {
     console.log(otp)
 
     if(response.result) {
-      trackSentMessage(response.data.contact.id, mobile, "64e1a8aa5c4d25eda26bb453")
+      trackSentMessage(response.contact.id, mobile, "64e1a8aa5c4d25eda26bb453")
     }
 
     // Store OTP and client ID in session
@@ -361,8 +361,8 @@ exports.postCustomerCheckin = async (req, res) => {
     // Send a WhatsApp message to the client
    const response = await sendWhatsAppMessage(clientId, templateMessage, phoneNumber);
   if(response.result) {
-    trackSentMessage(response.data.contact.id, phoneNumber, clientId)
-    res.status(201).json({
+    trackSentMessage(response.contact.id, phoneNumber, clientId)
+    res.status(200).json({
       success: `WhatsApp message sent to ${phoneNumber}.`,
     })
   } else {
