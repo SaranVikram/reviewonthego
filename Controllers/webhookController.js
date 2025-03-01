@@ -8,7 +8,7 @@ exports.watiMessageDeliveredHook = async (req, res) => {
   try {
     const { eventType, statusString, localMessageId } = req.body;
 
-    if (eventType === "sentMessageDELIVERED" && statusString === "Delivered") {
+    if (eventType === "sentMessageDELIVERED_v2" && statusString === "Delivered") {
  
         // ✅ Check if timestamp is within request-response range
         if (sentMessages.has(localMessageId)) {
@@ -26,11 +26,7 @@ exports.watiMessageDeliveredHook = async (req, res) => {
   }
 };
 
-
-
-// When sending a message, track the clientId with the timestamp from the send response
 exports.trackSentMessage = (id,clientId) => {
-   // ✅ Store both timestamps in the Map with clientId as the value
    sentMessages.set(id, {  clientId });
  
 };
