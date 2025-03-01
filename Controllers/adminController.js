@@ -177,7 +177,6 @@ exports.renewSubscription = async (req, res) => {
   try {
     // Extract mobile and subscriptionType from request
     const { mobile, subscriptionType } = req.body;
-    console.log(subscriptionType);
     
 
     // Find the client by mobile number and populate the subscription

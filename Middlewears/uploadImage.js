@@ -42,11 +42,8 @@ module.exports.uploadToR2 = async (req, res, next) => {
     const command = new PutObjectCommand(uploadParams);
     await s3Client.send(command);
 
-    // Generate the public URL for the uploaded file
-    const fileUrl = `https://reviewonthego-client.3a1668b00e517475c8814a6bdf4f30b0.r2.cloudflarestorage.com/${fileName}`;
-
    // Attach the file URL to the request object
-   req.fileUrl = fileUrl;
+   req.fileUrl = fileName;
 
    // Call the next middleware or route handler
    next();
