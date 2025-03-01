@@ -4,7 +4,7 @@ const Subscription = require("../Models/Subscription");
 
 // WATI.io API configuration
 const WATI_API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJkM2U2MDdjNC1lZDQ5LTQzZGItYTM4Yy04ODBmZDRiM2Y1YTQiLCJ1bmlxdWVfbmFtZSI6InNhcmFuLnZpa3JhbUB5YWhvby5jb20iLCJuYW1laWQiOiJzYXJhbi52aWtyYW1AeWFob28uY29tIiwiZW1haWwiOiJzYXJhbi52aWtyYW1AeWFob28uY29tIiwiYXV0aF90aW1lIjoiMDIvMTcvMjAyNSAxNjoxMTowNSIsInRlbmFudF9pZCI6IjQwNjQzNSIsImRiX25hbWUiOiJtdC1wcm9kLVRlbmFudHMiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBRE1JTklTVFJBVE9SIiwiZXhwIjoyNTM0MDIzMDA4MDAsImlzcyI6IkNsYXJlX0FJIiwiYXVkIjoiQ2xhcmVfQUkifQ.3UWCUnA-VLRJCCciRrQ8drIwnBkidCSeH7CVPp2BEBU'; // Replace with your actual WATI.io API key
-const WATI_API_ENDPOINT = 'https://live-mt-server.wati.io/406435/api/v1/sendTemplateMessage';
+const WATI_API_ENDPOINT = 'https://live-mt-server.wati.io/406435/api/v2/sendTemplateMessage';
 
 /**
  * Function to send WhatsApp message using WATI.io API
@@ -14,8 +14,6 @@ const WATI_API_ENDPOINT = 'https://live-mt-server.wati.io/406435/api/v1/sendTemp
  */
 async function sendWhatsAppMessage(clientId, templateMessage, number) {
     try {
-        // ✅ Capture timestamp **before** sending request
-const requestTimestamp = Math.floor(Date.now() / 1000).toString();
         const { template_name, parameters } = templateMessage;
         const response = await axios.post(
             WATI_API_ENDPOINT,
@@ -34,10 +32,8 @@ const requestTimestamp = Math.floor(Date.now() / 1000).toString();
                 },
             }
         );
-        // ✅ Capture timestamp **after** response is received
-const responseTimestamp = Math.floor(Date.now() / 1000).toString();
 
-return { data: response.data, requestTimestamp, responseTimestamp };
+return response.data
     } catch (error) {
         console.error(`Failed to send message to ${number}:`, error.response ? error.response.data : error.message);
         throw error;

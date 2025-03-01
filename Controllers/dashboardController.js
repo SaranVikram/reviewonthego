@@ -78,10 +78,11 @@ exports.postClientLogin = async (req, res) => {
     // Send a WhatsApp message to the client
     const response = await sendWhatsAppMessage("64e1a8aa5c4d25eda26bb453", templateMessage, mobile);
     console.log(otp)
-    const { data, requestTimestamp, responseTimestamp } = response
-
-    if(data.result) {
-      trackSentMessage(requestTimestamp,responseTimestamp,"64e1a8aa5c4d25eda26bb453");
+     
+    if(response.result) {
+      // Accessing 'localMessageId' from the first item in the 'receivers' array
+    const localMessageId = response.receivers[0].localMessageId;
+    trackSentMessage(localMessageId,"64e1a8aa5c4d25eda26bb453");
     }
 
     // Store OTP and client ID in session
@@ -366,10 +367,12 @@ exports.postCustomerCheckin = async (req, res) => {
     };
 
     const response = await sendWhatsAppMessage(clientId, templateMessage, phoneNumber)
-    const { data, requestTimestamp, responseTimestamp } = response
-  if(data.result) {
-    // Track using the current timestamp and phone number
-    trackSentMessage(requestTimestamp,responseTimestamp,clientId);
+    
+   
+  if(response.result) {
+      // Accessing 'localMessageId' from the first item in the 'receivers' array
+      const localMessageId = response.receivers[0].localMessageId;
+      trackSentMessage(localMessageId,clientId);
     res.status(200).json({
       success: `WhatsApp message sent to ${phoneNumber}.`,
     })
